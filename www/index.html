@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+  <body ng-app="vignesh-todo" ng-controller="mainCtrl" ng-init="getjournals();">
+
+    <ion-pane>
+     <ion-header-bar class="bar-assertive">
+    <h1 class="title">Refleq</h1>
+    <!-- New journal button-->
+    <button class="button button-icon" ng-click="openModal();">
+        <i class="icon ion-compose"></i>
+    </button>
+</ion-header-bar>
+      <ion-content>
+
+      <div class="list card" ng-repeat="journal in journals track by $index">
+       <div class="list" style="margin-bottom: 0px;">
+            <a class="item item-icon-left" href="#">
+            <i class="{{journal.sideIcon}}"></i>
+             <h2>{{journal.date}}</h2>
+             <p style="font-size:14px;">{{journal.title}}</p>
+            </a>
+    </div>
+        <div class="row">
+            <div class="col col-33"><button class="button icon-left ion-search button-assertive" ng-click="openModal2(); getIndex($index);">View</button></div>
+            <div class="col col-33"><button class="button icon-left ion-edit button-assertive" ng-click="openModal3(); getIndex($index);">Edit</button></div>
+            <div class="col col-33"><button class="button  icon-left ion-ios-trash button-assertive" ng-click="removejournal($index);"> Delete</button></div>
+            </div>
+        </div>
+    </div>
+</ion-content>
+
+    </ion-pane>
+    <script id="add-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-assertive">
+                <h1 class="title">New Journal Entry</h1>
+                <button class="button button-icon" ng-click="closeModal()">
+                    <i class="icon ion-android-close"></i>
+                </button>
+            </ion-header-bar>
+            <ion-content>
+                <form ng-submit="createjournal();">
+                    <div class="list list-inset">
+                    <label class="item item-input" style="border-color:#ef4e3a; border-right-width: 2px;">
+                            <span class="input-label" style="color:#ef4e3a;">Date:</span>
+                            <input type="date" style="color:#ef4e3a;" ng-model="journal.date">
+                        </label>
+                    <label class="item item-input assertive" style="border-color: #ef4e3a; border-right-width: 2px;">
+                        
+                            <input ng-model="journal.title" type="text" style="color:#ef4e3a;" placeholder="Describe your day in one sentence.">
+                        </label>
+                    <div class = "item item-divider item-positive">
+                        <span>Health</span>
+                    </div>
+                     <div class = "item positive" style="border-color: #4a87ee; border-right-width: 2px;">
+                        <span>How healthy do you feel?</span>
+                    </div>
+                    <div class="item range range-positive" style="border-color: #4a87ee; border-right-width: 2px;">
+                       <i class="icon ion-sad-outline positive"></i>
+                        <input type="range" ng-model="journal.healthRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-happy-outline positive"></i>
+                    </div>
+                    <label class="item item-input" style="border-color: #4a87ee; border-right-width: 2px;">
+                            <textarea ng-model="journal.healthContent" rows="5"  style="color:#4a87ee;"  placeholder="Did I exercise today?
+Am I in high spirits today?
+What did I eat today?
+What was my general mood?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-calm">
+                        <span>Personal Growth</span>
+                    </div>
+                     <div class = "item calm" style="border-color: #43cee6; border-right-width: 2px;">
+                        <span>How much have you grown?</span>
+                    </div>
+                    <div class="item range range-calm" style="border-color: #43cee6; border-right-width: 2px;">
+                       <i class="icon ion-arrow-graph-down-left calm"></i>
+                        <input type="range" ng-model="journal.growthRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-arrow-graph-up-right calm"></i>
+                    </div>
+                     <label class="item item-input" style="border-color: #43cee6 ; border-right-width: 2px;">
+                            <textarea ng-model="journal.growthContent" rows="5" style="color:#43cee6;" placeholder="What did I learn today?
+How do I compare to myself yesterday?
+What am I grateful for?
+Did I stay true to my values?"></textarea>
+                            </label>
+                     <div class = "item item-divider item-royal">
+                        <span>Productivity</span>
+                    </div>
+                    <div class = "item royal" style="border-color:#8a6de9; border-right-width: 2px;">
+                        <span>How productive were you?</span>
+                    </div>
+                    <div class="item range range-royal" style="border-color:#8a6de9; border-right-width: 2px;">
+                       <i class="icon ion-battery-low royal"></i>
+                        <input type="range" ng-model="journal.productRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-battery-charging royal"></i>
+                    </div>
+                    <label class="item item-input" style="border-color:#8a6de9; border-right-width: 2px;">
+                            <textarea ng-model="journal.productContent" rows="5" style="color:#8a6de9;" placeholder="What did I complete today?
+What distractions did I encounter?
+Critical choices I made today?
+Did I have a manageable schedule?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-balanced">
+                        <span>Financial Security</span>
+                    </div>
+                     <div class = "item balanced" style="border-color: #66cc33; border-right-width: 2px;">
+                        <span>Current financial status?</span>
+                    </div>
+                    <div class="item range range-balanced" style="border-color: #66cc33; border-right-width: 2px;">
+                       <i class="icon ion-social-usd-outline balanced"></i>
+                        <input type="range" ng-model="journal.financeRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-social-usd balanced"></i>
+                    </div>
+                    <label class="item item-input" style="border-color:#66cc33; border-right-width: 2px;">
+                            <textarea ng-model="journal.financeContent" rows="5" style="color:#66cc33;" placeholder="How much money did I spend today?
+What did I purchase today?
+Do I owe anyone money?
+Do I feel financial secure?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-energized">
+                        <span>Goals and Dreams</span>
+                    </div>
+                    <div class = "item energized" style="border-color:#f0b840; border-right-width: 2px;">
+                        <span>On track to accomplish goals?</span>
+                    </div>
+                    <div class="item range range-energized" style="border-color:#f0b840; border-right-width: 2px;">
+                       <i class="icon ion-ios-star-half energized"></i>
+                        <input type="range" ng-model="journal.goalRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-trophy energized"></i>
+                    </div>
+                     <label class="item item-input" style="border-color:#f0b840; border-right-width: 2px;">
+                    <textarea ng-model="journal.goalContent" rows="5" style="color:#f0b840;" placeholder="Do I remember my life goal?
+Did I lose sight of my ambitions today?
+Did I find any inspiration today?
+Goals for tomorrow?"></textarea>
+                    </label>
+                    <button type="submit" ng-click="closeModal()" class="button button-block button-assertive">Post Entry</button>
+                    </div>
+                </form>
+            </ion-content>
+        </ion-modal-view>
+    </script>
+
+
+    <script id="edit-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-assertive">
+                <h1 class="title">Update journal</h1>
+                <button class="button button-icon" ng-click="closeModal()">
+                    <i class="icon ion-android-close"></i>
+                </button>
+            </ion-header-bar>
+            <ion-content>
+                <form ng-submit="updatejournal()">
+                    <div class="list list-inset">
+                    <label class="item item-input" style="border-color:#ef4e3a; border-right-width: 2px;">
+                            <span class="input-label" style="color:#ef4e3a;">Date:</span>
+                            <input type="date" style="color:#ef4e3a;" ng-model="currentjournal.date">
+                        </label>
+                    <label class="item item-input assertive" style="border-color: #ef4e3a; border-right-width: 2px;">
+                        <span class="input-label" style="color:#ef4e3a;">Summary:</span>
+                            <input ng-model="currentjournal.title" type="text" style="color:#ef4e3a;" placeholder="Describe your day in one sentence.">
+                        </label>
+                    <div class = "item item-divider item-positive">
+                        <span>Health</span>
+                    </div>
+                     <div class = "item positive" style="border-color: #4a87ee; border-right-width: 2px;">
+                        <span>How healthy did you feel today?</span>
+                    </div>
+                    <div class="item range range-positive" style="border-color: #4a87ee; border-right-width: 2px;">
+                       <i class="icon ion-sad-outline positive"></i>
+                        <input type="range" ng-model="currentjournal.healthRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-happy-outline positive"></i>
+                    </div>
+                    <label class="item item-input" style="border-color: #4a87ee; border-right-width: 2px;">
+                            <textarea ng-model="currentjournal.healthContent" rows="5"  style="color:#4a87ee;"  placeholder="Did I exercise today?
+Am I in high spirits today?
+What did I eat today?
+What was my general mood?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-calm">
+                        <span>Personal Growth</span>
+                    </div>
+                     <div class = "item calm" style="border-color: #43cee6; border-right-width: 2px;">
+                        <span>How much have you grown?</span>
+                    </div>
+                    <div class="item range range-calm" style="border-color: #43cee6; border-right-width: 2px;">
+                       <i class="icon ion-arrow-graph-down-left calm"></i>
+                        <input type="range" ng-model="currentjournal.growthRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-arrow-graph-up-right calm"></i>
+                    </div>
+                     <label class="item item-input" style="border-color: #43cee6 ; border-right-width: 2px;">
+                            <textarea ng-model="currentjournal.growthContent" rows="5" style="color:#43cee6;" placeholder="What did I learn today?
+How do I compare to myself yesterday?
+What am I grateful for?
+Did I stay true to my values?"></textarea>
+                            </label>
+                     <div class = "item item-divider item-royal">
+                        <span>Productivity</span>
+                    </div>
+                    <div class = "item royal" style="border-color:#8a6de9; border-right-width: 2px;">
+                        <span>How productive were you?</span>
+                    </div>
+                    <div class="item range range-royal" style="border-color:#8a6de9; border-right-width: 2px;">
+                       <i class="icon ion-battery-low royal"></i>
+                        <input type="range" ng-model="currentjournal.productRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-battery-charging royal"></i>
+                    </div>
+                    <label class="item item-input" style="border-color:#8a6de9; border-right-width: 2px;">
+                            <textarea ng-model="currentjournal.productContent" rows="5" style="color:#8a6de9;" placeholder="What did I complete today?
+What distractions did I encounter?
+Critical choices I made today?
+Did I have a manageable schedule?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-balanced">
+                        <span>Financial Security</span>
+                    </div>
+                     <div class = "item balanced" style="border-color: #66cc33; border-right-width: 2px;">
+                        <span>Current financial status?</span>
+                    </div>
+                    <div class="item range range-balanced" style="border-color: #66cc33; border-right-width: 2px;">
+                       <i class="icon ion-social-usd-outline balanced"></i>
+                        <input type="range" ng-model="currentjournal.financeRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-social-usd balanced"></i>
+                    </div>
+                    <label class="item item-input" style="border-color:#66cc33; border-right-width: 2px;">
+                            <textarea ng-model="currentjournal.financeContent" rows="5" style="color:#66cc33;" placeholder="How much money did I spend today?
+What did I purchase today?
+Do I owe anyone money?
+Do I feel financial secure?"></textarea>
+                            </label>
+                    <div class = "item item-divider item-energized">
+                        <span>Goals and Dreams</span>
+                    </div>
+                    <div class = "item energized" style="border-color:#f0b840; border-right-width: 2px;">
+                        <span>On track to accomplish goals?</span>
+                    </div>
+                    <div class="item range range-energized" style="border-color:#f0b840; border-right-width: 2px;">
+                       <i class="icon ion-ios-star-half energized"></i>
+                        <input type="range" ng-model="currentjournal.goalRange" name="volume" min="0" max="100" value="50">
+                        <i class="icon ion-trophy energized"></i>
+                    </div>
+                     <label class="item item-input" style="border-color:#f0b840; border-right-width: 2px;">
+                    <textarea ng-model="currentjournal.goalContent" rows="5" style="color:#f0b840;" placeholder="Do I remember my life goal?
+Did I lose sight of my ambitions today?
+Did I find any inspiration today?
+Goals for tomorrow?"></textarea>
+                    </label>
+                    <button type="submit" ng-click="closeModal()" class="button button-block button-assertive">Update Entry</button>
+                    </div>
+                </form>
+            </ion-content>
+        </ion-modal-view>
+    </script>
+
+
+    <script id="view-modal.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-assertive">
+                <h1 class="title">{{journals[currentIndex].date}}</h1>
+                <button class="button button-icon" ng-click="closeModal()">
+                    <i class="icon ion-android-close"></i>
+                </button>
+            </ion-header-bar>
+
+            <ion-content>
+            <div class= "list list-inset">
+                <div class="item item-divider item-assertive">
+                    Summary 
+                </div>
+                <div class="item item-text-wrap" style="border-color:#ef4e3a; border-right-width: 2px;">
+                {{journals[currentIndex].title}}
+                  <h3 style="color:#ef4e3a; font-size:15px;">{{journals[currentIndex].total}}/100 Daily Index</h3><p style="color:#4a87ee">{{journals[currentIndex].healthRange}}/100 Health Index</p><p style="color:#43cee6">{{journals[currentIndex].growthRange}}/100 Growth Index</p><p style="color:#8a6de9">{{journals[currentIndex].productRange}}/100 Productivity Index</p><p style="color:#66cc33 ">{{journals[currentIndex].financeRange}}/100 Financial Index</p><p style="color:#f0b840">{{journals[currentIndex].goalRange}}/100 Goals Index</p>
+                 </div>
+                  <div class="item item-divider item-assertive">
+                    Details
+                </div>
+                 <div class="item item-text-wrap" style="border-color:#ef4e3a; border-right-width: 2px;">
+                    <p style="color:#4a87ee">{{journals[currentIndex].healthContent}}</p><p style="color:#43cee6">{{journals[currentIndex].growthContent}}</p><p style="color:#8a6de9">{{journals[currentIndex].productContent}}</p><p style="color:#66cc33 ">{{journals[currentIndex].financeContent}}</p><p style="color:#f0b840">{{journals[currentIndex].goalContent}}</p>
+                 </div>
+             </div>
+            </ion-content>
+
+        </ion-modal-view>
+    </script>
+  </body>
+</html>
